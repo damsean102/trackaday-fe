@@ -8,30 +8,38 @@
 
         <!-- Search Results -->
         <ais-hits>
-
              <template v-slot="{ items }">
                 <h2>Recently added:</h2>
-                <div class="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-6 my-12">
+               <!-- component -->
+                <main class="grid place-items-center min-h-screen min-h-screen p-5">
+                    <div>
+                        <section class="grid grid-cols-1 sm:grid-cols-4 gap-3">
 
-                    <section class="border-solid border-2 border-slate-100 p-3" v-for="item in items" :key="item.objectID">
-                        <img :src="item.thumbnailURL" />
+                            <!-- CARD -->
+                            <div v-for="item in items" :key="item.objectID" class="bg-gray-900 shadow-lg rounded p-3">
+                                <div class="group relative">
+                                    <img :src="item.thumbnailURL" class="w-full block rounded" />
+                                </div>
+                                <div class="p-5">
+                                    <h3 class="text-white text-lg">{{ item.name }}</h3>
+                                    <p class="text-white"><span v-for="artist in item.artists"> {{ artist }}, </span></p>
+                                    <p class="text-gray-400"><a :href="item.playlistUrl">{{ item.playlistName }}</a></p>
+                                    <p class="text-gray-400">Added: {{ formatDate(item.addedAt) }}</p>
+                                    <p class="text-gray-400">Duration: {{ duration(item.duration) }}</p>
+                                    <p class="text-gray-400"><a :href="item.externalURL">Track URL</a></p>
 
-                        <h3>{{ item.name }} - <span v-for="artist in item.artists"> {{ artist }}, </span></h3>
+                                    <audio controls v-if="item.previewUrl != 'null'">
+                                        <source :src="item.previewUrl">
+                                        Your browser does not support the audio element.
+                                    </audio>
+                                </div>
+                            </div>
+                            <!-- END OF CARD -->
 
-                        <audio controls>
-                            <source :src="item.previewUrl">
-                            Your browser does not support the audio element.
-                        </audio>
+                        </section>
+                    </div>
+                </main>
 
-                        <ul>
-                            <li><a :href="item.externalURL">Track URL</a></li>
-                            <li>Date Added: {{ item.addedAt }}</li>
-                            <li>Duration: {{ item.duration }}</li>
-                            <li><a :href="item.playlistUrl">{{ item.playlistName }}</a></li>
-                        </ul>
-                    </section>
-
-                </div>
             </template>
         </ais-hits>
 
@@ -46,6 +54,7 @@
 
 <script>
     import algoliasearch from 'algoliasearch/lite';
+    import dayjs from 'dayjs';
 
     export default {
         data() {
@@ -56,6 +65,22 @@
                 ),
             };
         },
+        methods: {
+            formatDate(dateString) {
+                const date = dayjs(dateString);
+                // Then specify how you want your dates to be formatted
+                return date.format('DD MMM YYYY');
+            },
+            duration(millis) {
+                var minutes = Math.floor(millis / 60000);
+                var seconds = ((millis % 60000) / 1000).toFixed(0);
+                return (
+                    seconds == 60 ?
+                    (minutes+1) + ":00" :
+                    minutes + ":" + (seconds < 10 ? "0" : "") + seconds
+                );
+            }
+        }
     };
 </script>
 
@@ -63,7 +88,7 @@
 @import './assets/base.css';
 
 #app {
-    max-width: 1280px;
+    /* max-width: 1280px; */
     margin: 0 auto;
     padding: 2rem;
     font-weight: normal;
