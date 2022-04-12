@@ -9,6 +9,7 @@
   "dependencies": {
     "algoliasearch": "^4.13.0",
     "dayjs": "^1.11.0",
+    "howler": "^2.2.3",
     "vue": "^3.2.31",
     "vue-instantsearch": "^4.3.3"
   },

@@ -13,12 +13,12 @@
                <!-- component -->
                 <main class="grid place-items-center min-h-screen min-h-screen p-5">
                     <div>
-                        <section class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                        <section class="grid grid-cols-1 sm:grid-cols-3 gap-3">
 
                             <!-- CARD -->
                             <div v-for="item in items" :key="item.objectID" class="bg-gray-900 shadow-lg rounded p-3">
                                 <div class="group relative">
-                                    <img :src="item.thumbnailURL" class="w-full block rounded" />
+                                    <img :src="item.thumbnailURL" class="w-full block rounded hover:cursor-pointer" @click="playSound(item.previewUrl)" />
                                 </div>
                                 <div class="p-5">
                                     <h3 class="text-white text-lg">{{ item.name }}</h3>
@@ -28,10 +28,12 @@
                                     <p class="text-gray-400">Duration: {{ duration(item.duration) }}</p>
                                     <p class="text-gray-400"><a :href="item.externalURL">Track URL</a></p>
 
-                                    <audio controls v-if="item.previewUrl != 'null'">
-                                        <source :src="item.previewUrl">
-                                        Your browser does not support the audio element.
-                                    </audio>
+                                    <!-- Play/Pause -->
+                                    <div v-if="item.previewUrl != 'null'" class="flex justify-center items-center m-5">
+                                        <button @click="playSound(item.previewUrl)" :show="!isAudioPlaying" class="w-24 h-24 rounded-full bg-gray-600 focus:outline-none"><i class="fa fa-play fa-2x text-white" id="play-btn">Play</i></button>
+                                        <button @click="stopSound(item.previewUrl)" :show="isAudioPlaying" class="w-24 h-24 rounded-full bg-gray-600 focus:outline-none"><i class="fa fa-play fa-2x text-white" id="play-btn">Pause</i></button>
+                                    </div>
+
                                 </div>
                             </div>
                             <!-- END OF CARD -->
@@ -55,6 +57,7 @@
 <script>
     import algoliasearch from 'algoliasearch/lite';
     import dayjs from 'dayjs';
+    import {Howl, Howler} from 'howler';
 
     export default {
         data() {
@@ -64,13 +67,9 @@
                     'f88fc1c54d13cf087ff21fac9294116f'
                 ),
             };
+            isAudioPlaying: false
         },
         methods: {
-            formatDate(dateString) {
-                const date = dayjs(dateString);
-                // Then specify how you want your dates to be formatted
-                return date.format('DD MMM YYYY');
-            },
             duration(millis) {
                 var minutes = Math.floor(millis / 60000);
                 var seconds = ((millis % 60000) / 1000).toFixed(0);
@@ -79,6 +78,40 @@
                     (minutes+1) + ":00" :
                     minutes + ":" + (seconds < 10 ? "0" : "") + seconds
                 );
+            },
+            formatDate(dateString) {
+                const date = dayjs(dateString);
+                // Then specify how you want your dates to be formatted
+                return date.format('DD MMM YYYY');
+            },
+            playSound(url) {
+                // Stop all asounds from playing
+                Howler.stop();
+
+                // Setup and play the current sound
+                var sound = new Howl({
+                    src: [url],
+                    html5: true,
+
+                    onplay: function() {
+                        this.isAudioPlaying = true
+                    },
+                    onpause: function() {
+                        this.isAudioPlaying = false
+                    },
+                    onstop: function() {
+                        this.isAudioPlaying = false
+                    },
+                    onend: function() {
+                        this.isAudioPlaying = false
+                    }
+                });
+
+                sound.play();
+
+            },
+            stopSound() {
+                Howler.stop();
             }
         }
     };
