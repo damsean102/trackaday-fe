@@ -36,7 +36,7 @@
                                     <p class="text-gray-400 hover:text-gray-100"><a :href="item.playlistUrl" target="_blank" rel="noopener noreferrer">{{ item.playlistName }}</a></p>
 
                                     <p class="my-4 buttons w-full">
-                                        <a :href="item.externalURL" class="rounded-full block w-full text-black font-bold text-center bg-brand-green p-2" target="_blank" rel="noopener noreferrer">View Track</a>
+                                        <a :href="item.externalURL" class="rounded-full block w-full text-black font-bold text-center bg-brand-green p-2" target="_blank" rel="noopener noreferrer">Listen on Spotify</a>
                                     </p>
 
                                     <!-- Play/Pause -->
